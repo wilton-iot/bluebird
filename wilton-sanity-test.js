@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-require(["bluebird", "assert"], function(Promise, assert) {
+define(["bluebird", "assert"], function(Promise, assert) {
     function guess(variant) {
         if (42 === variant) {
             return Promise.resolve(42);
