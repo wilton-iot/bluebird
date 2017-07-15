@@ -25,5 +25,10 @@ define(["bluebird", "assert"], function(Promise, assert) {
     assert.equal(attempt(41), "fail: Error: 41");
     assert.equal(attempt(42), "success: 42");
     assert.equal(attempt(43), "fail: Error: 43");
+    
+    return {
+        main: function() {
+        }
+    };
 });
 
