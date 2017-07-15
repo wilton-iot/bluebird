@@ -73,5 +73,20 @@
     "js/browser",
     "js/release",
     "LICENSE"
-  ]
+  ],
+  "wilton": {
+    "excludes": [
+      "benchmark",
+      "js/browser/bluebird.core.js",
+      "build",
+      "docs",
+      "src",
+      "test",
+      "tools",
+      "bench",
+      "build",
+      "tests",
+      "wilton-sanity-test.js"
+    ]
+  }
 }

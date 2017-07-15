@@ -312,28 +312,28 @@ var getMethodCaller;
 var getGetter;
 if (!true) {
 var makeMethodCaller = function (methodName) {
-    return new Function("ensureMethod", "                                    \n\
-        return function(obj) {                                               \n\
-            'use strict'                                                     \n\
-            var len = this.length;                                           \n\
-            ensureMethod(obj, 'methodName');                                 \n\
-            switch(len) {                                                    \n\
-                case 1: return obj.methodName(this[0]);                      \n\
-                case 2: return obj.methodName(this[0], this[1]);             \n\
-                case 3: return obj.methodName(this[0], this[1], this[2]);    \n\
-                case 0: return obj.methodName();                             \n\
-                default:                                                     \n\
-                    return obj.methodName.apply(obj, this);                  \n\
-            }                                                                \n\
-        };                                                                   \n\
-        ".replace(/methodName/g, methodName))(ensureMethod);
+    return new Function("ensureMethod", "                                    \n" +
+        "return function(obj) {                                               \n" +
+        "    'use strict'                                                     \n" +
+        "    var len = this.length;                                           \n" +
+        "    ensureMethod(obj, 'methodName');                                 \n" +
+        "    switch(len) {                                                    \n" +
+        "        case 1: return obj.methodName(this[0]);                      \n" +
+        "        case 2: return obj.methodName(this[0], this[1]);             \n" +
+        "        case 3: return obj.methodName(this[0], this[1], this[2]);    \n" +
+        "        case 0: return obj.methodName();                             \n" +
+        "        default:                                                     \n" +
+        "            return obj.methodName.apply(obj, this);                  \n" +
+        "    }                                                                \n" +
+        "};                                                                   \n" +
+        "".replace(/methodName/g, methodName))(ensureMethod);
 };
 
 var makeGetter = function (propertyName) {
-    return new Function("obj", "                                             \n\
-        'use strict';                                                        \n\
-        return obj.propertyName;                                             \n\
-        ".replace("propertyName", propertyName));
+    return new Function("obj", "                                              \n" +
+    "    'use strict';                                                        \n" +
+    "    return obj.propertyName;                                             \n" +
+    "    ".replace("propertyName", propertyName));
 };
 
 var getCompiled = function(name, compiler, cache) {
@@ -2264,18 +2264,18 @@ var reject;
 if (!true) {
 if (canEvaluate) {
     var thenCallback = function(i) {
-        return new Function("value", "holder", "                             \n\
-            'use strict';                                                    \n\
-            holder.pIndex = value;                                           \n\
-            holder.checkFulfillment(this);                                   \n\
-            ".replace(/Index/g, i));
+        return new Function("value", "holder", "                             \n" +
+        "    'use strict';                                                    \n" +
+        "    holder.pIndex = value;                                           \n" +
+        "    holder.checkFulfillment(this);                                   \n" +
+        "    ".replace(/Index/g, i));
     };
 
     var promiseSetter = function(i) {
-        return new Function("promise", "holder", "                           \n\
-            'use strict';                                                    \n\
-            holder.pIndex = promise;                                         \n\
-            ".replace(/Index/g, i));
+        return new Function("promise", "holder", "                           \n" +
+        "    'use strict';                                                    \n" +
+        "    holder.pIndex = promise;                                         \n" +
+        "    ".replace(/Index/g, i));
     };
 
     var generateHolderClass = function(total) {
@@ -2285,56 +2285,56 @@ if (canEvaluate) {
         }
         var assignment = props.join(" = ") + " = null;";
         var cancellationCode= "var promise;\n" + props.map(function(prop) {
-            return "                                                         \n\
-                promise = " + prop + ";                                      \n\
-                if (promise instanceof Promise) {                            \n\
-                    promise.cancel();                                        \n\
-                }                                                            \n\
-            ";
+            return "                                                         \n" +
+            "    promise = " + prop + ";                                      \n" +
+            "    if (promise instanceof Promise) {                            \n" +
+            "        promise.cancel();                                        \n" +
+            "    }                                                            \n" +
+            "";
         }).join("\n");
         var passedArguments = props.join(", ");
         var name = "Holder$" + total;
 
 
-        var code = "return function(tryCatch, errorObj, Promise, async) {    \n\
-            'use strict';                                                    \n\
-            function [TheName](fn) {                                         \n\
-                [TheProperties]                                              \n\
-                this.fn = fn;                                                \n\
-                this.asyncNeeded = true;                                     \n\
-                this.now = 0;                                                \n\
-            }                                                                \n\
-                                                                             \n\
-            [TheName].prototype._callFunction = function(promise) {          \n\
-                promise._pushContext();                                      \n\
-                var ret = tryCatch(this.fn)([ThePassedArguments]);           \n\
-                promise._popContext();                                       \n\
-                if (ret === errorObj) {                                      \n\
-                    promise._rejectCallback(ret.e, false);                   \n\
-                } else {                                                     \n\
-                    promise._resolveCallback(ret);                           \n\
-                }                                                            \n\
-            };                                                               \n\
-                                                                             \n\
-            [TheName].prototype.checkFulfillment = function(promise) {       \n\
-                var now = ++this.now;                                        \n\
-                if (now === [TheTotal]) {                                    \n\
-                    if (this.asyncNeeded) {                                  \n\
-                        async.invoke(this._callFunction, this, promise);     \n\
-                    } else {                                                 \n\
-                        this._callFunction(promise);                         \n\
-                    }                                                        \n\
-                                                                             \n\
-                }                                                            \n\
-            };                                                               \n\
-                                                                             \n\
-            [TheName].prototype._resultCancelled = function() {              \n\
-                [CancellationCode]                                           \n\
-            };                                                               \n\
-                                                                             \n\
-            return [TheName];                                                \n\
-        }(tryCatch, errorObj, Promise, async);                               \n\
-        ";
+        var code = "return function(tryCatch, errorObj, Promise, async) {    \n" +
+            "'use strict';                                                    \n" +
+            "function [TheName](fn) {                                         \n" +
+            "    [TheProperties]                                              \n" +
+            "    this.fn = fn;                                                \n" +
+            "    this.asyncNeeded = true;                                     \n" +
+            "    this.now = 0;                                                \n" +
+            "}                                                                \n" +
+            "                                                                 \n" +
+            "[TheName].prototype._callFunction = function(promise) {          \n" +
+            "    promise._pushContext();                                      \n" +
+            "    var ret = tryCatch(this.fn)([ThePassedArguments]);           \n" +
+            "    promise._popContext();                                       \n" +
+            "    if (ret === errorObj) {                                      \n" +
+            "        promise._rejectCallback(ret.e, false);                   \n" +
+            "    } else {                                                     \n" +
+            "        promise._resolveCallback(ret);                           \n" +
+            "    }                                                            \n" +
+            "};                                                               \n" +
+            "                                                                 \n" +
+            "[TheName].prototype.checkFulfillment = function(promise) {       \n" +
+            "    var now = ++this.now;                                        \n" +
+            "    if (now === [TheTotal]) {                                    \n" +
+            "        if (this.asyncNeeded) {                                  \n" +
+            "            async.invoke(this._callFunction, this, promise);     \n" +
+            "        } else {                                                 \n" +
+            "            this._callFunction(promise);                         \n" +
+            "        }                                                        \n" +
+            "                                                                 \n" +
+            "    }                                                            \n" +
+            "};                                                               \n" +
+            "                                                                 \n" +
+            "[TheName].prototype._resultCancelled = function() {              \n" +
+            "    [CancellationCode]                                           \n" +
+            "};                                                               \n" +
+            "                                                                 \n" +
+            "return [TheName];                                                \n" +
+        "}(tryCatch, errorObj, Promise, async);                               \n" +
+        "";
 
         code = code.replace(/\[TheName\]/g, name)
             .replace(/\[TheTotal\]/g, total)
@@ -3866,17 +3866,17 @@ function(callback, receiver, originalName, fn, _, multiArgs) {
                 generateCallForArgumentCount(argumentOrder[i]);
         }
 
-        ret += "                                                             \n\
-        default:                                                             \n\
-            var args = new Array(len + 1);                                   \n\
-            var i = 0;                                                       \n\
-            for (var i = 0; i < len; ++i) {                                  \n\
-               args[i] = arguments[i];                                       \n\
-            }                                                                \n\
-            args[i] = nodeback;                                              \n\
-            [CodeForCall]                                                    \n\
-            break;                                                           \n\
-        ".replace("[CodeForCall]", (shouldProxyThis
+        ret += "                                                             \n" +
+        "default:                                                             \n" +
+        "    var args = new Array(len + 1);                                   \n" +
+        "    var i = 0;                                                       \n" +
+        "    for (var i = 0; i < len; ++i) {                                  \n" +
+        "       args[i] = arguments[i];                                       \n" +
+        "    }                                                                \n" +
+        "    args[i] = nodeback;                                              \n" +
+        "    [CodeForCall]                                                    \n" +
+        "    break;                                                           \n" +
+        "".replace("[CodeForCall]", (shouldProxyThis
                                 ? "ret = callback.apply(this, args);\n"
                                 : "ret = callback.apply(receiver, args);\n"));
         return ret;
@@ -3885,27 +3885,27 @@ function(callback, receiver, originalName, fn, _, multiArgs) {
     var getFunctionCode = typeof callback === "string"
                                 ? ("this != null ? this['"+callback+"'] : fn")
                                 : "fn";
-    var body = "'use strict';                                                \n\
-        var ret = function (Parameters) {                                    \n\
-            'use strict';                                                    \n\
-            var len = arguments.length;                                      \n\
-            var promise = new Promise(INTERNAL);                             \n\
-            promise._captureStackTrace();                                    \n\
-            var nodeback = nodebackForPromise(promise, " + multiArgs + ");   \n\
-            var ret;                                                         \n\
-            var callback = tryCatch([GetFunctionCode]);                      \n\
-            switch(len) {                                                    \n\
-                [CodeForSwitchCase]                                          \n\
-            }                                                                \n\
-            if (ret === errorObj) {                                          \n\
-                promise._rejectCallback(maybeWrapAsError(ret.e), true, true);\n\
-            }                                                                \n\
-            if (!promise._isFateSealed()) promise._setAsyncGuaranteed();     \n\
-            return promise;                                                  \n\
-        };                                                                   \n\
-        notEnumerableProp(ret, '__isPromisified__', true);                   \n\
-        return ret;                                                          \n\
-    ".replace("[CodeForSwitchCase]", generateArgumentSwitchCase())
+    var body = "'use strict';                                                \n" +
+        "var ret = function (Parameters) {                                    \n" +
+        "    'use strict';                                                    \n" +
+        "    var len = arguments.length;                                      \n" +
+        "    var promise = new Promise(INTERNAL);                             \n" +
+        "    promise._captureStackTrace();                                    \n" +
+        "    var nodeback = nodebackForPromise(promise, " + multiArgs + ");   \n" +
+        "    var ret;                                                         \n" +
+        "    var callback = tryCatch([GetFunctionCode]);                      \n" +
+        "    switch(len) {                                                    \n" +
+        "        [CodeForSwitchCase]                                          \n" +
+        "    }                                                                \n" +
+        "    if (ret === errorObj) {                                          \n" +
+        "        promise._rejectCallback(maybeWrapAsError(ret.e), true, true);\n" +
+        "    }                                                                \n" +
+        "    if (!promise._isFateSealed()) promise._setAsyncGuaranteed();     \n" +
+        "    return promise;                                                  \n" +
+        "};                                                                   \n" +
+        "notEnumerableProp(ret, '__isPromisified__', true);                   \n" +
+        "return ret;                                                          \n" +
+    "".replace("[CodeForSwitchCase]", generateArgumentSwitchCase())
         .replace("[GetFunctionCode]", getFunctionCode);
     body = body.replace("Parameters", parameterDeclaration(newParameterCount));
     return new Function("Promise",
