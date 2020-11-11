@@ -87,7 +87,7 @@
       "bench",
       "build",
       "tests",
-      "wilton-sanity-test.js"
+      "test.js"
     ]
   }
 }
